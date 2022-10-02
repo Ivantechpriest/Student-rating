@@ -2,7 +2,7 @@
 
 ### To install and boot this service you would need the following:
  > Python 3.7.* \
- > Pip3 22.2.*
+ > Pip 22.2.*
  
 ### Pull the dependencies using the following command
 ```commandline
