@@ -1,4 +1,4 @@
-#Student rating
+# Student rating
 
 ### To install and boot this service you would need the following:
  > Python 3.7.* \
