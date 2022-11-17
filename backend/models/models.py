@@ -1,16 +1,29 @@
 from backend.app import db
+from marshmallow import Schema, fields, validate, post_load
+from flask import jsonify
 
 
 class User(db.Model):
+
     __tablename__ = "user"
     iduser = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(45), nullable=False)
-    rating = db.relationship("StudentRating", back_populates="user")
+    password = db.Column(db.String(145), nullable=False)
+    rating = db.relationship("StudentRating", backref="user")
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
+    @classmethod
+    def delete_user_by_id(cls, iduser):
+        if cls.query.get(iduser):
+            cls.query.filter_by(iduser=iduser).delete()
+            db.session.commit()
+
+            return jsonify({'message': f'User with id={iduser} was successfully deleted'})
+        else:
+            return jsonify({'error': f'User with id={iduser} does not exist!'}), 400
 
 
 class StudentRating(db.Model):
@@ -26,3 +39,56 @@ class StudentRating(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
+    @classmethod
+    def delete_student_by_id(cls, idstudent_rating):
+        if cls.query.get(idstudent_rating):
+            cls.query.filter_by(idstudent_rating=idstudent_rating).delete()
+            db.session.commit()
+
+            return jsonify({'message': f'Student with id={idstudent_rating} was successfully deleted'})
+        else:
+            return jsonify({'error': f'Student with id={idstudent_rating} does not exist!'}), 400
+
+
+class UserSchema(Schema):
+
+    iduser = fields.Integer(required=False)
+    login = fields.Str(validate=validate.Length(min=8, max=50), required=True)
+    password = fields.Str(validate=validate.Length(min=8, max=145), required=True)
+
+    @post_load
+    def make_user(self, data, **kwargs):
+        return User(**data)
+
+
+class StudentRatingSchema(Schema):
+
+    idstudent_rating = fields.Integer(required=False)
+
+    full_name = fields.Str(validate=validate.Length(min=2, max=60), required=True)
+    birth_date = fields.DateTime(required=True)
+    group = fields.Str(validate=validate.Length(min=1, max=15), required=True)
+    rating = fields.Integer(required=True)
+    score = fields.Integer(required=True)
+    iduser = fields.Integer(required=False)
+
+    @post_load
+    def make_student(self, data, **kwargs):
+        return StudentRating(**data)
+
+
+class UpdateStudentSchema(Schema):
+    idstudent_rating = fields.Integer(required=False)
+
+    full_name = fields.Str(validate=validate.Length(min=2, max=60), required=True)
+    birth_date = fields.DateTime(required=True)
+    group = fields.Str(validate=validate.Length(min=1, max=15), required=True)
+    rating = fields.Integer(required=True)
+    score = fields.Integer(required=True)
+    iduser = fields.Integer(required=False)
+
+    @post_load
+    def make_student(self, data, **kwargs):
+        return True
+
