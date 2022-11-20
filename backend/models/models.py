@@ -1,19 +1,25 @@
 from backend.app import db
 from marshmallow import Schema, fields, validate, post_load
 from flask import jsonify
+from flask_jwt_extended import create_access_token
 
 
 class User(db.Model):
 
     __tablename__ = "user"
     iduser = db.Column(db.Integer, primary_key=True)
-    login = db.Column(db.String(50), nullable=False)
+    login = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(145), nullable=False)
+    role = db.Column(db.String(20), default="User")
     rating = db.relationship("StudentRating", backref="user")
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
+    def get_jwt(self):
+        access_token = create_access_token(identity=self.iduser)
+        return access_token
 
     @classmethod
     def delete_user_by_id(cls, iduser):
@@ -56,6 +62,7 @@ class UserSchema(Schema):
     iduser = fields.Integer(required=False)
     login = fields.Str(validate=validate.Length(min=8, max=50), required=True)
     password = fields.Str(validate=validate.Length(min=8, max=145), required=True)
+    role = fields.Str(validate=validate.Length(min=8, max=10), required=False, default="User")
 
     @post_load
     def make_user(self, data, **kwargs):
@@ -67,7 +74,7 @@ class StudentRatingSchema(Schema):
     idstudent_rating = fields.Integer(required=False)
 
     full_name = fields.Str(validate=validate.Length(min=2, max=60), required=True)
-    birth_date = fields.DateTime(required=True)
+    birth_date = fields.Date(required=True)
     group = fields.Str(validate=validate.Length(min=1, max=15), required=True)
     rating = fields.Integer(required=True)
     score = fields.Integer(required=True)

@@ -2,7 +2,8 @@ from backend.models.models import StudentRating, StudentRatingSchema, User, User
 from flask import jsonify, request
 from backend.app import app, bcrypt
 from marshmallow import ValidationError
-
+from flask_jwt_extended import jwt_required
+from backend.utils import teacher_required
 
 
 @app.route("/")
@@ -22,11 +23,31 @@ def add_user():
 
     user.password = bcrypt.generate_password_hash(password=data['password'])
     user.save_to_db()
+    jwt_token = user.get_jwt()
+    return jsonify({"access_token": jwt_token}), 200
 
-    return jsonify({'Message': 'User rating have been created successfully.'}), 200
+    # return jsonify({'Message': 'User rating have been created successfully.'}), 200
+
+
+@app.route('/user/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    print(data)
+    user = User.query.filter_by(login=(data["login"])).first()
+
+    if not user:
+        return jsonify({'message': f'User {data["login"]} doesn\'t exist'}), 404
+
+    if not bcrypt.check_password_hash(user.password, data["password"]):
+        return jsonify({'message': f'Wrong password'}), 403
+
+    access_token = user.get_jwt()
+
+    return jsonify({'message': f'Logged in as {data["login"]}', 'access_token': access_token})
 
 
 @app.route('/user/<iduser>', methods=['GET'])
+@jwt_required()
 def get_user_by_id(iduser: int):
     user = User.query.get(iduser)
     if not user:
@@ -38,11 +59,15 @@ def get_user_by_id(iduser: int):
 
 
 @app.route('/user_delete/<iduser>', methods=['DELETE'])
+@jwt_required()
+@teacher_required
 def delete_user_by_id(iduser: int):
     return User.delete_user_by_id(iduser), 200
 
 
 @app.route('/add/student', methods=['POST'])
+@jwt_required()
+@teacher_required
 def add_in_student_rating():
     data = request.get_json()
     schema_student = StudentRatingSchema()
@@ -58,11 +83,14 @@ def add_in_student_rating():
 
 
 @app.route('/student_delete/<idstudent_rating>', methods=['DELETE'])
+@jwt_required()
+@teacher_required
 def delete_student_by_id(idstudent_rating: int):
     return StudentRating.delete_student_by_id(idstudent_rating), 200
 
 
 @app.route('/student/<idstudent_rating>', methods=['GET'])
+@jwt_required()
 def get_student_by_idstudent_rating(idstudent_rating: int):
     student = StudentRating.query.get(idstudent_rating)
 
@@ -82,6 +110,7 @@ def get_student_by_idstudent_rating(idstudent_rating: int):
 
 
 @app.route('/students/findByRating/<rating>', methods=['GET'])
+@jwt_required()
 def get_student_by_rating(rating: int):
     student = StudentRating.query.get(rating)
 
@@ -101,6 +130,7 @@ def get_student_by_rating(rating: int):
 
 
 @app.route('/students/findByScore/<score>', methods=['GET'])
+@jwt_required()
 def get_student_by_score(score: int):
     student = StudentRating.query.get(score)
 
@@ -120,6 +150,8 @@ def get_student_by_score(score: int):
 
 
 @app.route('/student/update', methods=['PUT'])
+@jwt_required()
+@teacher_required
 def update_student():
     data = request.get_json()
     student = StudentRating.query.get(data["idstudent_rating"])
