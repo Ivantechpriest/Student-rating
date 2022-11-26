@@ -62,7 +62,7 @@ def get_user_by_id(iduser: int):
 @jwt_required()
 @teacher_required
 def delete_user_by_id(iduser: int):
-    return User.delete_user_by_id(iduser), 200
+    return User.delete_user_by_id(iduser)
 
 
 @app.route('/add/student', methods=['POST'])
@@ -86,7 +86,7 @@ def add_in_student_rating():
 @jwt_required()
 @teacher_required
 def delete_student_by_id(idstudent_rating: int):
-    return StudentRating.delete_student_by_id(idstudent_rating), 200
+    return StudentRating.delete_student_by_id(idstudent_rating)
 
 
 @app.route('/student/<idstudent_rating>', methods=['GET'])
@@ -106,13 +106,13 @@ def get_student_by_idstudent_rating(idstudent_rating: int):
         # 'iduser': student.iduser
     }
 
-    return jsonify(student_data), 200
+    return jsonify(student_data)
 
 
 @app.route('/students/findByRating/<rating>', methods=['GET'])
 @jwt_required()
 def get_student_by_rating(rating: int):
-    student = StudentRating.query.get(rating)
+    student = StudentRating.query.filter_by(rating=rating).first()
 
     if not student:
         return jsonify({"Error": f"Student with rating ={rating} not found"}), 404
@@ -132,7 +132,7 @@ def get_student_by_rating(rating: int):
 @app.route('/students/findByScore/<score>', methods=['GET'])
 @jwt_required()
 def get_student_by_score(score: int):
-    student = StudentRating.query.get(score)
+    student = StudentRating.query.filter_by(score=score).first()
 
     if not student:
         return jsonify({"Error": f"Student with score ={score} not found"}), 404
@@ -169,4 +169,4 @@ def update_student():
         student.save_to_db()
         return jsonify({'Message': 'User has been updated successfully.'})
 
-    return jsonify({"Error": f"Student with user id={data['user_id']} not found"}), 404
+    return jsonify({"Error": f"Student with id={data['idstudent_rating']} not found"}), 404

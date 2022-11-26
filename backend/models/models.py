@@ -89,7 +89,7 @@ class UpdateStudentSchema(Schema):
     idstudent_rating = fields.Integer(required=False)
 
     full_name = fields.Str(validate=validate.Length(min=2, max=60), required=True)
-    birth_date = fields.DateTime(required=True)
+    birth_date = fields.Date(required=True)
     group = fields.Str(validate=validate.Length(min=1, max=15), required=True)
     rating = fields.Integer(required=True)
     score = fields.Integer(required=True)
