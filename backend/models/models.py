@@ -11,7 +11,7 @@ class User(db.Model):
     login = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(145), nullable=False)
     role = db.Column(db.String(20), default="User")
-    rating = db.relationship("StudentRating", backref="user")
+    rating = db.relationship("Student", backref="user")
 
     def save_to_db(self):
         db.session.add(self)
@@ -20,6 +20,10 @@ class User(db.Model):
     def get_jwt(self):
         access_token = create_access_token(identity=self.iduser)
         return access_token
+
+    @classmethod
+    def find_by_login(cls, login):
+        return cls.query.filter_by(login=login).first()
 
     @classmethod
     def delete_user_by_id(cls, iduser):
@@ -32,8 +36,8 @@ class User(db.Model):
             return jsonify({'error': f'User with id={iduser} does not exist!'}), 400
 
 
-class StudentRating(db.Model):
-    __tablename__ = "student_rating"
+class Student(db.Model):
+    __tablename__ = "student"
     idstudent_rating = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(60), nullable=False)
     birth_date = db.Column(db.DateTime, nullable=True)
@@ -58,11 +62,10 @@ class StudentRating(db.Model):
 
 
 class UserSchema(Schema):
-
     iduser = fields.Integer(required=False)
-    login = fields.Str(validate=validate.Length(min=8, max=50), required=True)
+    login = fields.Str(validate=validate.Length(min=5, max=50), required=True)
     password = fields.Str(validate=validate.Length(min=8, max=145), required=True)
-    role = fields.Str(validate=validate.Length(min=8, max=10), required=False, default="User")
+    role = fields.Str(validate=validate.Length(min=2, max=10), required=False, default="User")
 
     @post_load
     def make_user(self, data, **kwargs):
@@ -82,7 +85,7 @@ class StudentRatingSchema(Schema):
 
     @post_load
     def make_student(self, data, **kwargs):
-        return StudentRating(**data)
+        return Student(**data)
 
 
 class UpdateStudentSchema(Schema):

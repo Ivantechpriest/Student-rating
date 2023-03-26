@@ -1,7 +1,7 @@
 import pytest
 
 from backend.app import app, db, bcrypt
-from backend.models.models import User, StudentRating
+from backend.models.models import User, Student
 from sqlalchemy import delete
 
 
@@ -35,12 +35,12 @@ def app_with_data(app_with_db):
                 password=bcrypt.generate_password_hash(password="12345678"),
                 )
 
-    student = StudentRating(full_name="Dima Sliusarchuk",
-                            birth_date="2004-10-06",
-                            group="kn",
-                            rating=100,
-                            score=200
-                            )
+    student = Student(full_name="Dima Sliusarchuk",
+                      birth_date="2004-10-06",
+                      group="kn",
+                      rating=100,
+                      score=200
+                      )
 
     db.session.add(user)
     db.session.add(student)
@@ -49,7 +49,7 @@ def app_with_data(app_with_db):
 
     yield app_with_db
 
-    db.session.execute(delete(StudentRating))
+    db.session.execute(delete(Student))
     db.session.execute(delete(User))
     db.session.commit()
 

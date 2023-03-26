@@ -1,4 +1,4 @@
-from backend.models.models import StudentRating, StudentRatingSchema, User, UserSchema, UpdateStudentSchema
+from backend.models.models import Student, StudentRatingSchema, User, UserSchema, UpdateStudentSchema
 from flask import jsonify, request
 from backend.app import app, bcrypt
 from marshmallow import ValidationError
@@ -6,12 +6,7 @@ from flask_jwt_extended import jwt_required
 from backend.utils import teacher_required
 
 
-@app.route("/")
-def index():
-    return "<h1>Main page</h1>"
-
-
-@app.route('/user/register', methods=['POST'])
+@app.route('/user', methods=['POST'])
 def add_user():
     data = request.get_json()
     schema_user = UserSchema()
@@ -21,12 +16,13 @@ def add_user():
     except ValidationError as err:
         return jsonify({"Validation errors": err.messages}), 405
 
+    if User.find_by_login(data["login"]):
+        return jsonify({'Error': f'User {data["login"]} already exists'}), 403
+
     user.password = bcrypt.generate_password_hash(password=data['password'])
     user.save_to_db()
     jwt_token = user.get_jwt()
     return jsonify({"access_token": jwt_token}), 200
-
-    # return jsonify({'Message': 'User rating have been created successfully.'}), 200
 
 
 @app.route('/user/login', methods=['POST'])
@@ -58,14 +54,14 @@ def get_user_by_id(iduser: int):
     return jsonify(user_data), 200
 
 
-@app.route('/user_delete/<iduser>', methods=['DELETE'])
+@app.route('/user/<iduser>', methods=['DELETE'])
 @jwt_required()
 @teacher_required
 def delete_user_by_id(iduser: int):
     return User.delete_user_by_id(iduser)
 
 
-@app.route('/add/student', methods=['POST'])
+@app.route('/student', methods=['POST'])
 @jwt_required()
 @teacher_required
 def add_in_student_rating():
@@ -82,17 +78,17 @@ def add_in_student_rating():
     return jsonify({'Message': 'Student rating have been created successfully.'}), 200
 
 
-@app.route('/student_delete/<idstudent_rating>', methods=['DELETE'])
+@app.route('/student/<idstudent_rating>', methods=['DELETE'])
 @jwt_required()
 @teacher_required
 def delete_student_by_id(idstudent_rating: int):
-    return StudentRating.delete_student_by_id(idstudent_rating)
+    return Student.delete_student_by_id(idstudent_rating)
 
 
 @app.route('/student/<idstudent_rating>', methods=['GET'])
 @jwt_required()
 def get_student_by_idstudent_rating(idstudent_rating: int):
-    student = StudentRating.query.get(idstudent_rating)
+    student = Student.query.get(idstudent_rating)
 
     if not student:
         return jsonify({"Error": f"Student with student id={idstudent_rating} not found"}), 404
@@ -112,49 +108,51 @@ def get_student_by_idstudent_rating(idstudent_rating: int):
 @app.route('/students/findByRating/<rating>', methods=['GET'])
 @jwt_required()
 def get_student_by_rating(rating: int):
-    student = StudentRating.query.filter_by(rating=rating).first()
+    students = Student.query.filter(Student.rating <= rating).all()
 
-    if not student:
+    if not students:
         return jsonify({"Error": f"Student with rating ={rating} not found"}), 404
 
-    student_data = {
-        'full_name': student.full_name,
-        'birth_date': student.birth_date,
-        'group': student.group,
-        'rating': student.rating,
-        'score': student.score,
-        # 'iduser': student.iduser
-    }
+    def to_json(student):
+        return {
+            'full_name': student.full_name,
+            'birth_date': student.birth_date,
+            'group': student.group,
+            'rating': student.rating,
+            'score': student.score,
+            'iduser': student.iduser
+        }
 
-    return jsonify(student_data), 200
+    return {"students": [to_json(student) for student in students]}
 
 
 @app.route('/students/findByScore/<score>', methods=['GET'])
 @jwt_required()
 def get_student_by_score(score: int):
-    student = StudentRating.query.filter_by(score=score).first()
+    students = Student.query.filter(Student.score >= score).all()
 
-    if not student:
+    if not students:
         return jsonify({"Error": f"Student with score ={score} not found"}), 404
 
-    student_data = {
-        'full_name': student.full_name,
-        'birth_date': student.birth_date,
-        'group': student.group,
-        'rating': student.rating,
-        'score': student.score,
-        # 'iduser': student.iduser
-    }
+    def to_json(student):
+        return {
+            'full_name': student.full_name,
+            'birth_date': student.birth_date,
+            'group': student.group,
+            'rating': student.rating,
+            'score': student.score,
+            'iduser': student.iduser
+        }
 
-    return jsonify(student_data), 200
+    return {"students": [to_json(student) for student in students]}
 
 
-@app.route('/student/update', methods=['PUT'])
+@app.route('/student', methods=['PUT'])
 @jwt_required()
 @teacher_required
 def update_student():
     data = request.get_json()
-    student = StudentRating.query.get(data["idstudent_rating"])
+    student = Student.query.get(data["idstudent_rating"])
     if student:
         schema_user = UpdateStudentSchema()
 
@@ -167,6 +165,6 @@ def update_student():
         student.score = data['score']
 
         student.save_to_db()
-        return jsonify({'Message': 'User has been updated successfully.'})
+        return jsonify({'Message': 'Student has been updated successfully.'})
 
     return jsonify({"Error": f"Student with id={data['idstudent_rating']} not found"}), 404
