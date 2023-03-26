@@ -1,0 +1,149 @@
+$button-green: #42ba47;
+$red-color: #fa4247;
+$grey-color: #bbb593;
+
+body.login_page,
+.delete_page,
+.add_page,
+.edit_page{
+  background-image: url("bubbles.jpg");
+}
+
+body.profile {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+  background-image: url("img.png");
+  font-family: Arial, Helvetica, sans-serif;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    li {
+      margin-top: 20px;
+      font-size: 18px;
+
+      strong {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
+.login {
+  margin: 150px auto;
+  width: 300px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
+}
+
+.add_student,
+.edit_student,
+.delete_student{
+  margin: 150px auto;
+  width: 500px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
+}
+
+h2 {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+input[type="text"], input[type="password"] {
+  width: 95%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+input[type="submit"] {
+  background-color: $button-green;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  width: 100%;
+}
+
+input[type="submit"]:hover {
+  background-color: $button-green;
+}
+
+input[type="date"],
+input[type="number"],
+select {
+  margin-bottom: 10px;
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+
+  &:focus {
+    outline: none;
+    border-color: $button-green;
+  }
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+
+  button {
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin: 0 10px;
+
+    &.back-button {
+      background-color: $button-green;
+      color: white;
+    }
+
+    &.ok-button {
+      background-color: $button-green;
+      color: white;
+    }
+
+    &.cancel-button {
+      background-color: $red-color;
+      color: white;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

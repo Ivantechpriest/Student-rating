@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Edit student Page</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body class="edit_page">
+  <div class="edit_student">
+    <form>
+      <h2>Edit Profile</h2>
+      <label for="login">Student`s login</label>
+      <input type="text" id="login" name="login" required>
+      <label for="full-name">Full Name</label>
+      <input type="text" id="full-name" name="full-name" required>
+      <label for="birth-date">Birth Date</label>
+      <input type="date" id="birth-date" name="birth-date" required>
+      <label for="group">Group</label>
+      <input type="text" id="group" name="group" required>
+      <label for="score">Score</label>
+      <input type="number" id="score" name="score" min="0" max="100" required>
+      <label for="rating">Rating</label>
+      <input type="number" id="rating" name="rating" min="0" max="100" required>
+      <div class="buttons">
+        <button type="submit" class="ok-button">OK</button>
+        <button type="button" class="cancel-button">Cancel</button>
+      </div>
+    </form>
+  </div>
+</body>
