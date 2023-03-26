@@ -13,4 +13,5 @@ pip install -r requirements.txt
 waitress-serve --port=80 --call "main:app"
 
 ### To view on GitHub Pages:
+```commandline
 Add /frontend then /login, /main or others
