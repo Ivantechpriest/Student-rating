@@ -11,3 +11,6 @@ pip install -r requirements.txt
 ### Boot it via waitress with the command below
 ```commandline
 waitress-serve --port=80 --call "main:app"
+
+### To view on GitHub Pages:
+Add /frontend then /login, /main or others
