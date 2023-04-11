@@ -109,14 +109,13 @@ thead {
   color: #fff;
 }
 
-thead th,
-tbody td {
+th, td {
   padding: 10px;
   text-align: left;
   border: 1px solid $secondary-color;
 }
 
-tbody tr:hover {
+table tr:not(:first-child):hover {
   background-color: #f2f2f2;
 }
 
@@ -125,6 +124,9 @@ footer {
   color: #fff;
   padding: 20px;
   font-family: sans-serif;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 
   .container {
     max-width: 960px;
