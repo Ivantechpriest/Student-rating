@@ -4,6 +4,7 @@ from backend.app import app, bcrypt
 from marshmallow import ValidationError
 from flask_jwt_extended import jwt_required
 from backend.utils import teacher_required
+from sqlalchemy import desc
 
 
 @app.route('/user', methods=['POST'])
@@ -129,7 +130,7 @@ def get_student_by_rating(rating: int):
 @app.route('/students/findByScore/<score>', methods=['GET'])
 @jwt_required()
 def get_student_by_score(score: int):
-    students = Student.query.filter(Student.score >= score).all()
+    students = Student.query.filter(Student.score >= score).order_by(desc(Student.score)).all()
 
     if not students:
         return jsonify({"Error": f"Student with score ={score} not found"}), 404
@@ -145,6 +146,26 @@ def get_student_by_score(score: int):
         }
 
     return {"students": [to_json(student) for student in students]}
+
+
+@app.route('/students/findall', methods=['GET'])
+def get_all_students():
+    students = Student.query.all()
+
+    if not students:
+        return jsonify({"Error": f"Students are not found"}), 404
+
+    def to_json(student):
+        return {
+            'full_name': student.full_name,
+            'birth_date': student.birth_date,
+            'group': student.group,
+            'rating': student.rating,
+            'score': student.score,
+            'iduser': student.iduser
+        }
+
+    return {"students": [to_json(student) for student in students]}, 200
 
 
 @app.route('/student', methods=['PUT'])

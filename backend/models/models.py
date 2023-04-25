@@ -40,7 +40,7 @@ class Student(db.Model):
     __tablename__ = "student"
     idstudent_rating = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(60), nullable=False)
-    birth_date = db.Column(db.DateTime, nullable=True)
+    birth_date = db.Column(db.Date, nullable=True)
     group = db.Column(db.String(15), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     score = db.Column(db.Integer, nullable=False)
