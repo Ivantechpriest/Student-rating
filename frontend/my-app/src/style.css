@@ -2,14 +2,14 @@ body.login_page,
 .delete_page,
 .add_page,
 .edit_page {
-  background-image: url("bubbles.jpg");
+  background-image: url("../../bubbles.jpg");
 }
 
 body.profile {
   max-width: 960px;
   margin: 0 auto;
   padding: 20px;
-  background-image: url("img.png");
+  background-image: url("../../img.png");
   font-family: Arial, Helvetica, sans-serif;
 }
 body.profile h2 {

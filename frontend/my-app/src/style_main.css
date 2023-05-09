@@ -45,7 +45,7 @@ section {
   margin-bottom: 30px;
 }
 
-form {
+form.main {
   margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
