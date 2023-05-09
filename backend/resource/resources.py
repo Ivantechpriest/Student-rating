@@ -4,7 +4,7 @@ from backend.app import app, bcrypt
 from marshmallow import ValidationError
 from flask_jwt_extended import jwt_required
 from backend.utils import teacher_required
-from sqlalchemy import desc
+from sqlalchemy import desc, asc
 
 
 @app.route('/user', methods=['POST'])
@@ -40,7 +40,7 @@ def login():
 
     access_token = user.get_jwt()
 
-    return jsonify({'message': f'Logged in as {data["login"]}', 'access_token': access_token})
+    return jsonify({'message': f'Logged in as {data["login"]}', 'access_token': access_token, 'role': user.role})
 
 
 @app.route('/user/<iduser>', methods=['GET'])
@@ -109,7 +109,7 @@ def get_student_by_idstudent_rating(idstudent_rating: int):
 @app.route('/students/findByRating/<rating>', methods=['GET'])
 @jwt_required()
 def get_student_by_rating(rating: int):
-    students = Student.query.filter(Student.rating <= rating).all()
+    students = Student.query.filter(Student.rating <= rating).order_by(asc(Student.rating)).all()
 
     if not students:
         return jsonify({"Error": f"Student with rating ={rating} not found"}), 404
@@ -149,6 +149,7 @@ def get_student_by_score(score: int):
 
 
 @app.route('/students/findall', methods=['GET'])
+@jwt_required()
 def get_all_students():
     students = Student.query.all()
 
@@ -173,7 +174,7 @@ def get_all_students():
 @teacher_required
 def update_student():
     data = request.get_json()
-    student = Student.query.get(data["idstudent_rating"])
+    student = Student.query.filter_by(full_name=data["full_name"]).first()
     if student:
         schema_user = UpdateStudentSchema()
 
@@ -188,4 +189,4 @@ def update_student():
         student.save_to_db()
         return jsonify({'Message': 'Student has been updated successfully.'})
 
-    return jsonify({"Error": f"Student with id={data['idstudent_rating']} not found"}), 404
+    return jsonify({"Error": f"Student with id={data['full_name']} not found"}), 404
