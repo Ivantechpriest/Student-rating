@@ -35,20 +35,6 @@ const ForgotPassword = () => {
                 </form>
       </div>
   )
-
-
-  // return (
-  //   <div className="login">
-  //     <h2>Get new password</h2>
-  //       <form onSubmit={handleSubmit}>
-  //         <label>
-  //           Email:
-  //           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-  //         </label>
-  //         <button type="submit">OK</button>
-  //       </form>
-  //   </div>
-  // );
 };
 
 
