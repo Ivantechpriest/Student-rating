@@ -19,27 +19,15 @@ const Addstudent = () => {
     function addstudent(e){
         e.preventDefault();
 
-
-        const register = {
-            login: login,
-            password: password
-        }
-
         const student = {
+            login: login,
+            password: password,
             full_name: fullname,
             birth_date: birthdate,
             group: group,
             rating: rating,
             score: score
         }
-
-        axios.post('http://127.0.0.1:5000/user', register)
-            .then(function (response) {
-                console.log(response);
-            })
-            .catch(error => {
-            alert('Please try again.');
-            });
 
         axios.post('http://127.0.0.1:5000/student', student,
             {headers: {"Authorization" : `Bearer ${localStorage.getItem("token")}`}})
@@ -67,9 +55,9 @@ const Addstudent = () => {
                 <label htmlFor="password">Password</label>
                 <input type="password" id="password" name="password" required
                        value={password} onChange={(e) => setPassword(e.target.value)}/>
-                <label htmlFor="confirm-password">Confirm Password</label>
-                <input type="password" id="confirm-password" name="confirm-password" required
-                value={confirm} onChange={(e) => setConfirm(e.target.value)}/>
+                {/*<label htmlFor="confirm-password">Confirm Password</label>*/}
+                {/*<input type="password" id="confirm-password" name="confirm-password" required*/}
+                {/*value={confirm} onChange={(e) => setConfirm(e.target.value)}/>*/}
                 <label htmlFor="full-name">Full Name</label>
                 <input type="text" id="full-name" name="full-name" required
                 value={fullname} onChange={(e) => setFullname(e.target.value)}/>

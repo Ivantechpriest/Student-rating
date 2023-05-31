@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import {useNavigate} from 'react-router-dom';
-import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-import "./style.css";
-
+import './style.css';
 
 const Login = () =>{
     const navigate = useNavigate();
@@ -25,6 +24,7 @@ const Login = () =>{
             console.log(response);
             localStorage.setItem("token", response.data.access_token);
             localStorage.setItem("role", response.data.role);
+            localStorage.setItem("userid", response.data.userid);
             if (response.data.role === 'User'){
                 navigate("/main");
             } else if (response.data.role === 'Teacher'){
@@ -47,8 +47,10 @@ const Login = () =>{
                     <label htmlFor="password-input">Password:</label>
                     <input type="password" id="password-input" name="password" placeholder="Enter password" required
                            value={password} onChange={(e) => setPassword(e.target.value)}/>
-
                     <input type="submit" value="Login" onClick={handleLogin}/>
+                    <div className="forgot_password">
+                        <a href="http://localhost:3000/forgot_password">Forgot password?</a>
+                    </div>
                 </form>
             </div>
         </>

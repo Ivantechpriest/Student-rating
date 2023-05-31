@@ -51,14 +51,14 @@ class Student(db.Model):
         db.session.commit()
 
     @classmethod
-    def delete_student_by_id(cls, idstudent_rating):
-        if cls.query.get(idstudent_rating):
-            cls.query.filter_by(idstudent_rating=idstudent_rating).delete()
+    def delete_student_by_name(cls, name):
+        if cls.query.filter_by(full_name=name):
+            cls.query.filter_by(full_name=name).delete()
             db.session.commit()
 
-            return jsonify({'message': f'Student with id={idstudent_rating} was successfully deleted'})
+            return jsonify({'message': f'Student with name={name} was successfully deleted'})
         else:
-            return jsonify({'error': f'Student with id={idstudent_rating} does not exist!'}), 400
+            return jsonify({'error': f'Student with name={name} does not exist!'}), 400
 
 
 class UserSchema(Schema):
