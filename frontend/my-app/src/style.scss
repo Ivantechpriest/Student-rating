@@ -1,6 +1,173 @@
 $button-green: #42ba47;
 $red-color: #fa4247;
 $grey-color: #bbb593;
+$success-color: #28a745;
+$primary-color: rgb(103, 92, 61);
+$secondary-color: #326e36;
+$font-family: sans-serif;
+
+@mixin button {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-family: sans-serif;
+}
+
+@mixin input-style {
+  margin-right: 20px;
+  margin-left: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid $secondary-color;
+  width: 100px;
+  font-family: sans-serif;
+}
+
+// Styles for header and navigation
+header {
+  background-color: $primary-color;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+body.main_page{
+  background: #ffffff;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+}
+
+nav ul li {
+  margin: 0 10px;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: $font-family;
+}
+
+nav ul li a:hover {
+  background-color: $success-color;
+  color: white;
+}
+
+main.main_page {
+  flex: 1;
+  padding-top: 50px;
+  max-width: 1200px;
+  margin: 20px auto;
+  font-family: $font-family;
+}
+
+section {
+  margin-bottom: 30px;
+}
+
+form.main {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  color: black;
+  font-family: $font-family;
+  margin-left: 10px;
+  &:first-of-type {
+    margin-right: 10px;
+  }
+}
+
+input[type="number"] {
+  @include input-style;
+  margin-top: 10px;
+}
+
+input[type="search"] {
+  @include input-style;
+  margin-left: 40%;
+  width: 40%;
+}
+
+button[type="submit"] {
+  @include button;
+  background-color: #55C1C2;
+  color: #fff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: $secondary-color;
+  color: #fff;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid $secondary-color;
+}
+
+table tr:not(:first-child):hover {
+  background-color: #f2f2f2;
+}
+
+footer {
+  background-color: $primary-color;
+  color: #fff;
+  padding: 20px;
+  font-family: sans-serif;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin-left: 20px;
+
+      a {
+        color: #fff;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
 
 body.login_page,
 .delete_page,
@@ -146,4 +313,9 @@ select {
       cursor: pointer;
     }
   }
+}
+
+.forgot_password {
+  display: flex;
+  margin-top: 20px;
 }

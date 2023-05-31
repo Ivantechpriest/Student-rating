@@ -1,10 +1,13 @@
 from backend.models.models import Student, StudentRatingSchema, User, UserSchema, UpdateStudentSchema
 from flask import jsonify, request
-from backend.app import app, bcrypt
+from backend.app import app, bcrypt, mail
 from marshmallow import ValidationError
 from flask_jwt_extended import jwt_required
 from backend.utils import teacher_required
-from sqlalchemy import desc, asc
+from sqlalchemy import desc, asc, or_
+from flask_mail import Message
+import secrets
+import itertools
 
 
 @app.route('/user', methods=['POST'])
@@ -29,7 +32,6 @@ def add_user():
 @app.route('/user/login', methods=['POST'])
 def login():
     data = request.get_json()
-    print(data)
     user = User.query.filter_by(login=(data["login"])).first()
 
     if not user:
@@ -40,7 +42,25 @@ def login():
 
     access_token = user.get_jwt()
 
-    return jsonify({'message': f'Logged in as {data["login"]}', 'access_token': access_token, 'role': user.role})
+    return jsonify({'message': f'Logged in as {data["login"]}', 'access_token': access_token, 'role': user.role,
+                   'userid': user.iduser})
+
+
+@app.route('/student/forgot_password/<email>', methods=['GET'])
+def change_forgotten_password(email: str):
+    password = secrets.token_urlsafe(10)
+    user = User.query.filter_by(login=email).first()
+    if user:
+        schema_user = UserSchema()
+
+        user.password = bcrypt.generate_password_hash(password=password)
+        user.save_to_db()
+    else:
+        return jsonify({"Error": f"User with user email={email} not found"}), 404
+
+    msg = Message(f"Your new password: {password}", sender='student.rating@gmail.com', recipients=[email])
+    mail.send(msg)
+    return 'Password changed successfully', 200
 
 
 @app.route('/user/<iduser>', methods=['GET'])
@@ -67,10 +87,27 @@ def delete_user_by_id(iduser: int):
 @teacher_required
 def add_in_student_rating():
     data = request.get_json()
+    user_data = dict(itertools.islice(data.items(), 2))
+    student_data = dict(itertools.islice(data.items(), 2, 7))
+    schema_user = UserSchema()
+
+    if User.find_by_login(data["login"]):
+        return jsonify({'Error': f'User {data["login"]} already exists'}), 403
+    try:
+        user = schema_user.load(user_data)
+    except ValidationError as err:
+        return jsonify({"Validation errors": err.messages}), 405
+
+    user.password = bcrypt.generate_password_hash(password=data['password'])
+    user.save_to_db()
+
+    last_user = User.query.filter(User.iduser).order_by(desc(User.iduser)).first()
+    student_data["iduser"] = last_user.iduser
+
     schema_student = StudentRatingSchema()
 
     try:
-        student = schema_student.load(data)
+        student = schema_student.load(student_data)
     except ValidationError as err:
         return jsonify({"Validation errors": err.messages}), 405
 
@@ -79,11 +116,11 @@ def add_in_student_rating():
     return jsonify({'Message': 'Student rating have been created successfully.'}), 200
 
 
-@app.route('/student/<idstudent_rating>', methods=['DELETE'])
+@app.route('/student/<full_name>', methods=['DELETE'])
 @jwt_required()
 @teacher_required
-def delete_student_by_id(idstudent_rating: int):
-    return Student.delete_student_by_id(idstudent_rating)
+def delete_student_by_name(full_name: str):
+    return Student.delete_student_by_name(full_name)
 
 
 @app.route('/student/<idstudent_rating>', methods=['GET'])
@@ -169,6 +206,27 @@ def get_all_students():
     return {"students": [to_json(student) for student in students]}, 200
 
 
+@app.route('/students/search/<text>', methods=['GET'])
+@jwt_required()
+def search_students(text: str):
+    students = Student.query.filter(or_(Student.full_name.like(f'%{text}%'), Student.group.like(f'%{text}%'))).all()
+
+    if not students:
+        return jsonify({"Error": f"Students are not found"}), 404
+
+    def to_json(student):
+        return {
+            'full_name': student.full_name,
+            'birth_date': student.birth_date,
+            'group': student.group,
+            'rating': student.rating,
+            'score': student.score,
+            'iduser': student.iduser
+        }
+
+    return {"students": [to_json(student) for student in students]}, 200
+
+
 @app.route('/student', methods=['PUT'])
 @jwt_required()
 @teacher_required
@@ -190,3 +248,17 @@ def update_student():
         return jsonify({'Message': 'Student has been updated successfully.'})
 
     return jsonify({"Error": f"Student with id={data['full_name']} not found"}), 404
+
+
+@app.route('/student/change_password', methods=['PUT'])
+@jwt_required()
+def change_password():
+    data = request.get_json()
+    user = User.query.get(data['iduser'])
+    if user:
+        user.password = bcrypt.generate_password_hash(password=data["password"])
+
+        user.save_to_db()
+        return jsonify({'Message': 'Student has been updated successfully.'})
+
+    return jsonify({"Error": f"Student with id={data['iduser']} not found"}), 404
