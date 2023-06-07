@@ -55,15 +55,15 @@ const Main = () =>{
                     <h2>Filter Students</h2>
                     <form className="main">
                         <label className="main" htmlFor="best-score">Score:</label>
-                        <input type="number" id="best-score" name="best-score"
+                        <input type="number" id="best-score" data-testid="score-input" name="best-score"
                                placeholder="Min score" required
                            value={score} onChange={(e) => setScore(e.target.value)}/>
                         <label className="main" htmlFor="best-rated">Rating:</label>
                         <input type="number" id="best-rated" name="best-rated"
                                    placeholder="Max rating" required
                            value={rating} onChange={(e) => setRating(e.target.value)}/>
-                        <button type="submit" id="filter-btn" onClick={handleFilter}>Filter</button>
-                        <input type="search" id="best-score" name="best-score"
+                        <button type="submit" id="filter-btn" data-testid="filter-button" onClick={handleFilter}>Filter</button>
+                        <input type="search" id="best-score" name="best-score" data-testid="search-input"
                                placeholder="Search students" required
                            value={search} onChange={(e) => setSearch(e.target.value)}/>
                         <button type="submit" id="filter-btn" onClick={handleSearch}>Search</button>
