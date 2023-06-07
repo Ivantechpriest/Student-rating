@@ -55,9 +55,6 @@ const Addstudent = () => {
                 <label htmlFor="password">Password</label>
                 <input type="password" id="password" name="password" required
                        value={password} onChange={(e) => setPassword(e.target.value)}/>
-                {/*<label htmlFor="confirm-password">Confirm Password</label>*/}
-                {/*<input type="password" id="confirm-password" name="confirm-password" required*/}
-                {/*value={confirm} onChange={(e) => setConfirm(e.target.value)}/>*/}
                 <label htmlFor="full-name">Full Name</label>
                 <input type="text" id="full-name" name="full-name" required
                 value={fullname} onChange={(e) => setFullname(e.target.value)}/>
